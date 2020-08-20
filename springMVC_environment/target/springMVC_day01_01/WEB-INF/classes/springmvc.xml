@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--通过web.xml，springmvc.xml文件被加载，则扫描就执行，那么相应有注解的类就被创建-->
+    <context:component-scan base-package="com"/>
+    <!--视图解析器对象，用于帮助我们对具体的界面的跳转-->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--文件所在的位置-->
+        <property name="prefix" value="/WEB-INF/pages/"></property>
+        <!--文件的后缀名-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!--开启springMVC框架注解的支持-->
+    <mvc:annotation-driven/>
+</beans>

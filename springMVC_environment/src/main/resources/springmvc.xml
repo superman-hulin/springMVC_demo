@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--扫描带有spring注解的类，将其加入容器-->
+    <context:component-scan base-package="com"/>
+    <!--视图解析器对象，用于帮助我们对具体的界面的跳转-->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--页面文件所在的位置-->
+        <property name="prefix" value="/WEB-INF/pages/"></property>
+        <!--文件的后缀名-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--将自定义的类型转换器注册到ConversionServiceFactoryBean中-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <!--该类中的属性converters是set集合，则使用集合注入的方式-->
+        <property name="converters" >
+            <set>
+                <bean class="com.utils.StringToDateConverter"></bean>
+            </set>
+        </property>
+    </bean>
+    <!--让自定义的类型转换器生效-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+    <!--由于前端控制器拦截配置的是/ 表示拦截所有请求，如果项目中有静态资源，则也被拦截无法使用-->
+    <!--配置哪些资源不被前端控制器拦截  mapping是请求路径 location是资源所在文件 -->
+    <mvc:resources mapping="/js/**" location="/js/**"></mvc:resources>
+    <mvc:resources mapping="/image/**" location="/image/**"></mvc:resources>
+    <mvc:resources mapping="/css/**" location="/css/**"></mvc:resources>
+
+    <!--配置文件解析器  其中id的值是固定写法-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--可以配置属性 如最大文件大小10M-->
+        <property name="maxUploadSize" value="10*1024*1024"></property>
+    </bean>
+
+    <!--配置异常处理器-->
+    <bean id="sysExceptionResolver" class="com.utils.SysExceptionResolver"></bean>
+
+    <!--配置拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--要拦截的方法 如果是/** 则所有控制器的所有方法都拦截 -->
+            <mvc:mapping path="/user/*"/>
+            <!--不要拦截的方法
+            <mvc:exclude-mapping path=""></mvc:exclude-mapping>-->
+            <!--配置拦截器对象-->
+            <bean id="myInterceptor" class="com.interceptor.MyInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!--开启springMVC框架注解的支持，才能支持springmvc中的注解-->
+    <mvc:annotation-driven/>
+</beans>
